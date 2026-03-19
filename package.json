@@ -1,0 +1,23 @@
+{
+  "name": "pweb-atividade-5-dcalencar",
+  "version": "1.0.0",
+  "description": "Repositório para a atividade \"Sistema de Rastreamento de Entregas (Delivery Tracker API) \"",
+  "type": "module",
+  "main": "index.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar/issues"
+  },
+  "homepage": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar#readme"
+}
