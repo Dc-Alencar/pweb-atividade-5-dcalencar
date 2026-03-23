@@ -1,4 +1,4 @@
-import {EntregaServices} from "../services/entrega.services.js";
+import {EntregaServices} from "../services/entrega.service.js";
 
 const entregaServices = new EntregaServices();
 

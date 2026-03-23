@@ -1,4 +1,4 @@
-import { EntregaRepository } from "../repositories/entrega.repository";
+import { EntregaRepository } from "../repositories/entrega.repository.js";
 
 export class EntregaServices{
     constructor(repository) {
