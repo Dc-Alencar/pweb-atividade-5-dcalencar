@@ -23,7 +23,7 @@ export class EntregaDatabase {
       ]
     };
 
-    this.entregas.push(this.postEntrega);
-    return this.postEntrega;
+    this.entregas.push(novaEntrega);
+    return novaEntrega;
   }
 }

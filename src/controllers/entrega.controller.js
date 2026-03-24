@@ -1,9 +1,12 @@
-import {EntregaServices} from "../services/entrega.services.js";
+import {EntregaServices} from "../services/entrega.service.js";
+import { EntregaRepository } from "../repositories/entrega.repository.js";
 
-const entregaServices = new EntregaServices();
+const repository = new EntregaRepository();
+const entregaServices = new EntregaServices(repository);
 
 export class EntregaController{
-    ListarEntregas=(req,res) => {
-        const entrega = entregaServices.ListarEntregas
+    ListarEntregas = async (req,res) => {
+        const entrega = await entregaServices.listarEntregas();
+        res.json(entrega);
     }
 }
