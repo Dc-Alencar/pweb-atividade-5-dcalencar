@@ -5,5 +5,6 @@ const entregaRouter = Router();
 const entregaController = new EntregaController();
 
 entregaRouter.get("/",entregaController.ListarEntregas);
+entregaRouter.post("/",entregaController.CriarEntrega);
 
 export default entregaRouter;

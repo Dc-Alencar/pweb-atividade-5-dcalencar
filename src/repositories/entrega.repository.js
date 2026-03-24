@@ -8,6 +8,6 @@ export class EntregaRepository{
     }
 
     async criar(dados){
-        return deb.postEntregas(dados)
+        return db.postEntrega(dados)
     }
 }
