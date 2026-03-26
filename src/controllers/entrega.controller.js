@@ -15,7 +15,7 @@ export class EntregaController{
         }
     }
 
-    CriarEntrega = async (req,res) => {
+    CriarEntrega = async (req, res, next) => {
     try{
         const dados = req.body;
             const novaEntrega = await entregaServices.criarEntrega(dados);
@@ -35,5 +35,16 @@ export class EntregaController{
         catch(error){
             next(error);
         }
-    }   
+    } 
+
+    AvançarEntrega = async(req,res,next) => {
+        try{
+            const {id} = req.params;
+            const avançaEntrega = await entregaServices.avançaEntregaId(id);
+            res.status(200).json(avançaEntrega);
+        }
+        catch(error){
+            next(error);
+        }
+    }
 }

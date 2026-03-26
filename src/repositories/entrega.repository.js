@@ -14,4 +14,8 @@ export class EntregaRepository{
     async buscarId(id){
         return db.getBuscarPorId(id)
     }
+
+    async atualizar(id, entregaAtualizada){
+        return db.putEntrega(id, entregaAtualizada);
+    }
 }

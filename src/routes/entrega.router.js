@@ -5,7 +5,8 @@ const entregaRouter = Router();
 const entregaController = new EntregaController();
 
 entregaRouter.get("/",entregaController.ListarEntregas);
-entregaRouter.get("/:id",entregaController.BuscarPorID);    
+entregaRouter.get("/:id",entregaController.BuscarPorID); 
 entregaRouter.post("/",entregaController.CriarEntrega);
+entregaRouter.patch("/:id/avançar",entregaController.AvançarEntrega);
 
 export default entregaRouter;
