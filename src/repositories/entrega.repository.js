@@ -10,4 +10,8 @@ export class EntregaRepository{
     async criar(dados){
         return db.postEntrega(dados)
     }
+
+    async buscarId(id){
+        return db.getBuscarPorId(id)
+    }
 }

@@ -15,4 +15,20 @@ export class EntregaServices{
         return criarEntrega;
 
     };
+
+    async buscarPorID(id){
+        this.validarID(id);
+        const idNum = Number(id);
+        const entregaPorId = await this.repository.buscarId(idNum);
+        if (entregaPorId == null){
+            throw new AppError("Entrega não encontrada!", 404)
+        }
+        return entregaPorId;    
+    }
+
+    validarID(id){
+        if(!id || isNaN(id) || id < 0){
+            throw new AppError("ID inválido!!!", 400);
+        };
+    }
 }

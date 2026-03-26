@@ -26,4 +26,8 @@ export class EntregaDatabase {
     this.entregas.push(novaEntrega);
     return novaEntrega;
   }
+
+  getBuscarPorId(id){
+    return this.entregas.find(e => e.id === id) || null;
+  }
 }
