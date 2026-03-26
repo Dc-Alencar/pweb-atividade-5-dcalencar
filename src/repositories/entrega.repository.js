@@ -1,11 +1,13 @@
 import { EntregaDatabase } from "../database/entrega.database.js";
 
+const db = new EntregaDatabase();
+
 export class EntregaRepository{
     async listarEntregas(){
-        return getEntregas()
+        return db.getEntregas()
     }
 
-    async criar(){
-        return this.postEntregas()
+    async criar(dados){
+        return db.postEntrega(dados)
     }
 }

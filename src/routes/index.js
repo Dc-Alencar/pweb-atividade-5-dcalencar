@@ -1,7 +1,6 @@
-import { Router } from 'express';
-// Change this line to use ./ instead of ../routes/
-import entregaRouter from './entrega.router.js'; 
+import {Router} from 'express';
+import entregaRouter from './entrega.router.js';
 
 export const router = Router();
 
-router.use('/entrega', entregaRouter);
+router.use('/eventos',entregaRouter);

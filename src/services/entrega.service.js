@@ -6,12 +6,12 @@ export class EntregaServices{
     };
 
     async listarEntregas(){
-        let entregas = this.repository.listarEntregas();
+        let entregas = await this.repository.listarEntregas();
         return entregas;
     };
 
     async criarEntrega(dados){
-        const criarEntrega = this.repository.criar(dados);
+        const criarEntrega = await this.repository.criar(dados);
         return criarEntrega;
 
     };
