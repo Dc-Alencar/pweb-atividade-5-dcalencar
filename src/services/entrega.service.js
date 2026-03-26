@@ -33,7 +33,7 @@ export class EntregaServices{
         return entregaPorId;    
     }
 
-    async asyncavançaPorId(id){
+    async async avançaPorId(id){
         this.validarID(id);
         const idNum = Number(id);
 
