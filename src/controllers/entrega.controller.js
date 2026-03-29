@@ -37,11 +37,11 @@ export class EntregaController{
         }
     } 
 
-    AvançarEntrega = async(req,res,next) => {
+    AvancarEntrega = async(req,res,next) => {
         try{
             const {id} = req.params;
-            const avançaEntrega = await entregaServices.avançaEntregaId(id);
-            res.status(200).json(avançaEntrega);
+            const avancaEntrega = await entregaServices.avancaPorId(id);
+            res.status(200).json(avancaEntrega);
         }
         catch(error){
             next(error);

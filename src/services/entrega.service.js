@@ -33,23 +33,32 @@ export class EntregaServices{
         return entregaPorId;    
     }
 
-    async async avançaPorId(id){
+    async avancaPorId(id){
         this.validarID(id);
         const idNum = Number(id);
 
-        const entrega = await this.repository.buscarPorID(idNum);
+        const entrega = await this.repository.buscarId(idNum);
         if(!entrega){
             throw new AppError("Entrega não encontrada.", 404)
         }
 
-        entrega.status = "ENTREGUE";
-
-        entrega.historico.push({
-            data: new Date().toISOString(),
-            histDescricao: "Status avançado para: ENTREGUE"
+        if (entrega.status === "CRIADA"){
+            entrega.status = "EM_TRANSITO";
+            entrega.historico.push({
+                data: new Date().toISOString(),
+                histDescricao: "Status avançado para: EM_TRANSITO"
         });
+        }
 
-        const entregaAtualizada = await this.repository.entregaAtualizar(idNum, entrega);
+        else if (entrega.status === "EM_TRANSITO"){
+            entrega.status = "ENTREGUE";
+            entrega.historico.push({
+                data: new Date().toISOString(),
+                histDescricao: "Status avançado para: ENTREGUE"
+        });
+        }
+
+        const entregaAtualizada = await this.repository.atualizar(idNum, entrega);
         return entregaAtualizada;
     }
 
