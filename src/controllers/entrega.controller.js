@@ -4,7 +4,7 @@ export class EntregaController{
     }
         ListarEntregas = async (req,res) => {
         try{
-            const entrega = await this.entregaServices.listarEntregas();
+            const entrega = await this.entregaServices.listarEntregas(req.query);
             res.json(entrega);
         }
         catch(error){

@@ -7,6 +7,13 @@ export class EntregaServices{
 
     async listarEntregas(filtros){
         let entregas = await this.repository.listarEntregas(filtros);
+
+        if (filtros.status) {
+            if (filtros.status !== "CRIADA" && filtros.status !== "ENTREGUE" && filtros.status !== "EM_TRANSITO" && filtros.status !== "CANCELADO"){
+                throw new AppError("Status inválido!", 400);                    
+            }
+            entregas = entregas.filter(e => e.status === filtros.status);
+        };
         return entregas;
     };
 
