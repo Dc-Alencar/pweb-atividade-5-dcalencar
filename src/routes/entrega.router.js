@@ -1,5 +1,5 @@
 import { Router } from "express";
-import {EntregaController} from "../controllers/entrega.controller.js";
+import { EntregaController } from "../controllers/entrega.controller.js";
 import { EntregaServices } from "../services/entrega.service.js";
 import { EntregaRepository } from "../repositories/entrega.repository.js";
 

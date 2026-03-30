@@ -2,7 +2,8 @@ export class EntregaController{
     constructor(entregaServices) {
         this.entregaServices = entregaServices;
     }
-        ListarEntregas = async (req,res) => {
+
+    ListarEntregas = async (req,res, next) => {
         try{
             const entrega = await this.entregaServices.listarEntregas(req.query);
             res.json(entrega);
@@ -15,8 +16,8 @@ export class EntregaController{
     CriarEntrega = async (req, res, next) => {
     try{
         const dados = req.body;
-            const novaEntrega = await this.entregaServices.criarEntrega(dados);
-            res.status(201).json(novaEntrega)
+        const novaEntrega = await this.entregaServices.criarEntrega(dados);
+        res.status(201).json(novaEntrega)
         }
         catch(error){
             next(error);
