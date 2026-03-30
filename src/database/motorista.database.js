@@ -4,7 +4,7 @@ export class MotoristaDatabase {
         this.nextId = 1;
     }
 
-    getMotoristas(){
+    getMotorista(){
         return this.motoristas;
     }
 
@@ -17,5 +17,8 @@ export class MotoristaDatabase {
             status: dados.status,
             entregas: []
         }
+
+    this.motoristas.push(novoMotorista);
+    return novoMotorista;
     }
 }

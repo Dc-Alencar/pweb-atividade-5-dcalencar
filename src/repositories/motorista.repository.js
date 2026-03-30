@@ -2,12 +2,12 @@ import { MotoristaDatabase } from "../database/motorista.database.js";
 
 const db = new MotoristaDatabase();
 
-export class EntregaRepository{
-    async listarMotoristas(){
-        return db.getMotoristas()
+export class MotoristaRepository{
+    async listarMotorista(){
+        return db.getMotorista()
     }
 
-    async criar(){
-        return db.criar()
+    async criar(dados){
+        return db.postMotorista(dados)
     }
 }
