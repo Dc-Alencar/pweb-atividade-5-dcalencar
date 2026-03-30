@@ -1,13 +1,12 @@
-import { EntregaRepository } from "../repositories/entrega.repository.js";
 import { AppError } from "../utils/appError.js"
 
 export class EntregaServices{
     constructor(repository) {
         this.repository = repository;
-    };
+    }
 
     async listarEntregas(filtros){
-        let entregas = await this.repository.listarEntregas();
+        let entregas = await this.repository.listarEntregas(filtros);
         return entregas;
     };
 
@@ -18,6 +17,8 @@ export class EntregaServices{
         if (dados.status !== "CRIADA"){
             dados.status = "CRIADA"
         }
+        dados.data = new Date().toISOString();
+        dados.histDescricao = "Pedido criado!!";
         const criarEntrega = await this.repository.criar(dados);
         return criarEntrega;
 
@@ -33,7 +34,7 @@ export class EntregaServices{
         return entregaPorId;    
     }
 
-    async avancaPorId(id){
+    async avancarPorId(id){
         this.validarID(id);
         const idNum = Number(id);
 
@@ -60,6 +61,30 @@ export class EntregaServices{
 
         const entregaAtualizada = await this.repository.atualizar(idNum, entrega);
         return entregaAtualizada;
+    }
+
+    async cancelarPorId(id){
+        this.validarID(id);
+        const idNum = Number(id);
+
+        const entrega = await this.repository.buscarId(idNum);
+        if(!entrega){
+            throw new AppError("Entrega não encontrada!!!", 404)
+        }
+
+        if(entrega.status !== "ENTREGUE"){
+            entrega.status = "CANCELADO";
+            entrega.historico.push({
+                data: new Date().toISOString(),
+                histDescricao: "Pedido CANCELADO!!!"
+            });
+        }
+        else{
+            throw new AppError("Não podemos cancelar um pedido que já foi entregue.", 400)
+        }
+
+        const entregaAtualalizada = await this.repository.atualizar(idNum, entrega);
+        return entregaAtualalizada;
     }
 
     validarID(id){

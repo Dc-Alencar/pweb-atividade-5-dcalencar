@@ -1,13 +1,10 @@
-import {EntregaServices} from "../services/entrega.service.js";
-import { EntregaRepository } from "../repositories/entrega.repository.js";
-
-const repository = new EntregaRepository();
-const entregaServices = new EntregaServices(repository);
-
 export class EntregaController{
+    constructor(entregaServices) {
+        this.entregaServices = entregaServices;
+    }
         ListarEntregas = async (req,res) => {
         try{
-            const entrega = await entregaServices.listarEntregas();
+            const entrega = await this.entregaServices.listarEntregas();
             res.json(entrega);
         }
         catch(error){
@@ -18,7 +15,7 @@ export class EntregaController{
     CriarEntrega = async (req, res, next) => {
     try{
         const dados = req.body;
-            const novaEntrega = await entregaServices.criarEntrega(dados);
+            const novaEntrega = await this.entregaServices.criarEntrega(dados);
             res.status(201).json(novaEntrega)
         }
         catch(error){
@@ -29,7 +26,7 @@ export class EntregaController{
     BuscarPorID = async(req,res, next) => {
         try{
             const {id} = req.params;
-            const buscarID = await entregaServices.buscarPorID(id);
+            const buscarID = await this.entregaServices.buscarPorID(id);
             res.status(200).json(buscarID);
         }
         catch(error){
@@ -40,11 +37,22 @@ export class EntregaController{
     AvancarEntrega = async(req,res,next) => {
         try{
             const {id} = req.params;
-            const avancaEntrega = await entregaServices.avancaPorId(id);
-            res.status(200).json(avancaEntrega);
+            const avancarEntrega = await this.entregaServices.avancarPorId(id);
+            res.status(200).json(avancarEntrega);
         }
         catch(error){
             next(error);
         }
+    }
+
+    CancelarEntrega = async(req, res, next) => {
+        try{
+            const {id} = req.params;
+            const cancelarEntrega = await this.entregaServices.cancelarPorId(id);
+            res.status(200).json(cancelarEntrega);
+        }
+        catch(error){
+            next(error);
+        };
     }
 }
