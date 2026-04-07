@@ -49,7 +49,7 @@ Content-Type: application/json
 ```
 
 
-### Motoristas (http://localhost:3000/api/Motoristas):
+### Motoristas (http://localhost:3000/api/motoristas):
 |Métodos|Endpoint|Descrição|
 |:---|:---:|---:|
 |POST|"/"|Cadastra um novo motorista|
