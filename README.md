@@ -31,5 +31,51 @@
 ### Motoristas (http://localhost:3000/api/Motoristas):
 |Métodos|Endpoint|Descrição|
 |:---|:---:|---:|
+
+
+## Diagrama ASCII
+```text
+    +-------------------+           +---------------------+
+    |  EntregaDatabase  |           |  MotoristaDatabase  |
+    +---------+---------+           +----------+----------+
+              |                     
+              v                                v
+    +-------------------+           +---------------------+
+    | EntregaRepository |           | MotoristaRepository |
+    +---------+---------+           +----------+----------+
+              |                                |
+              |                      | 
+              |                                |
+              |       +------------------------+ 
+              |       |       |
+              v       v                        v
+    +-------------------+           +---------------------+
+    |  EntregaServices  |           |  MotoristaServices  |
+    +---------+---------+           +----------+----------+
+              |                                |
+              |                      | 
+              v                                v
+    +-------------------+           +---------------------+
+    | EntregaController |           | MotoristaController |
+    +---------+---------+           +----------+----------+
+              |                                |
+              |                                | 
+              v                                v
+    +-------------------+           +---------------------+
+    |   entregaRouter   |           |   motoristaRouter   |
+    +---------+---------+           +----------+----------+
+              |                                |
+              +--------------+-----------------+
+                             | 
+                             v
+                    +-----------------+
+                    |  Router (index) |
+                    +--------+--------+
+                             | 
+                             v
+                    +-----------------+
+                    |  App (Express)  |
+                    +-----------------+
+```
 |GET|"/"|Lista todos os motoristas registrados|
 |POST|"/"|Registra um novo motorista|
