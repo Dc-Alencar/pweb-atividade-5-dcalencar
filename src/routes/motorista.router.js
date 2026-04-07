@@ -12,5 +12,7 @@ const motoristaController = new MotoristaController(motoristaServices);
 
 motoristaRouter.post("/", motoristaController.CriarMotorista);
 motoristaRouter.get("/", motoristaController.ListarMotorista);
+motoristaRouter.get("/id/:id", motoristaController.ProcurarIdMotorista);
+motoristaRouter.get("/cpf/:cpf", motoristaController.ProcurarCpfMotorista);
 
 export default motoristaRouter;

@@ -10,4 +10,12 @@ export class MotoristaRepository{
     async criar(dados){
         return db.postMotorista(dados)
     }
+
+    async buscarId(id){
+        return db.getMotoristaId(id)
+    }
+
+    async buscarCpf(cpf){
+        return db.getMotoristaCpf(cpf)
+    }
 }

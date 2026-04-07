@@ -1,4 +1,5 @@
 import { AppError } from "../utils/appError.js"
+import { validarID } from "../utils/validadores.js";
 
 export class EntregaServices{
     constructor(repository) {
@@ -32,7 +33,7 @@ export class EntregaServices{
     };
 
     async buscarPorID(id){
-        this.validarID(id);
+        validarID(id);
         const idNum = Number(id);
         const entregaPorId = await this.repository.buscarId(idNum);
         if (entregaPorId == null){
@@ -94,9 +95,4 @@ export class EntregaServices{
         return entregaAtualalizada;
     }
 
-    validarID(id){
-        if(!id || isNaN(id) || id < 0){
-            throw new AppError("ID inválido!!!", 400);
-        };
-    }
 }

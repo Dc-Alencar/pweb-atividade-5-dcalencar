@@ -24,5 +24,25 @@ export class MotoristaController{
         }
     }
 
-    
+    ProcurarIdMotorista = async (req, res, next) => {
+        try{
+            const {id} = req.params;
+            const buscarId = await this.motoristaServices.buscarMotoristaId(id);
+            res.status(200).json(buscarId);
+        }
+        catch(error){
+            next(error);
+        }
+    }
+
+    ProcurarCpfMotorista = async (req, res, next) => {
+        try{
+            const {cpf} = req.params;
+            const buscarCpf = await this.motoristaServices.buscarMotoristaCpf(cpf);
+            res.status(200).json(buscarCpf);
+        }
+        catch(error){
+            next(error);
+        }
+    }
 }

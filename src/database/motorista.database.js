@@ -21,4 +21,12 @@ export class MotoristaDatabase {
     this.motoristas.push(novoMotorista);
     return novoMotorista;
     }
+
+  getMotoristaId(id){
+    return this.motoristas.find(e => e.id === id) || null;
+  }
+  
+  getMotoristaCpf(cpf){
+    return this.motoristas.find(e => e.cpf === cpf) || null;
+  }  
 }
