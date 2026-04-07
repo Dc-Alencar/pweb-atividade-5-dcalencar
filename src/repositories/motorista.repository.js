@@ -18,4 +18,8 @@ export class MotoristaRepository{
     async buscarCpf(cpf){
         return db.getMotoristaCpf(cpf)
     }
+
+    async atualizar(id, motoristaAtualizado){
+        return db.putMotorista(id, motoristaAtualizado);
+    }
 }

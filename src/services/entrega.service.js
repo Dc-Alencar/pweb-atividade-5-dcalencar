@@ -2,8 +2,9 @@ import { AppError } from "../utils/appError.js"
 import { validarID } from "../utils/validadores.js";
 
 export class EntregaServices{
-    constructor(repository) {
+    constructor(repository, motoristaRepository) {
         this.repository = repository;
+        this.motoristaRepository = motoristaRepository;  
     }
 
     async listarEntregas(filtros){
@@ -43,7 +44,7 @@ export class EntregaServices{
     }
 
     async avancarPorId(id){
-        this.validarID(id);
+        validarID(id);
         const idNum = Number(id);
 
         const entrega = await this.repository.buscarId(idNum);
@@ -72,7 +73,7 @@ export class EntregaServices{
     }
 
     async cancelarPorId(id){
-        this.validarID(id);
+        validarID(id);
         const idNum = Number(id);
 
         const entrega = await this.repository.buscarId(idNum);
@@ -95,4 +96,41 @@ export class EntregaServices{
         return entregaAtualalizada;
     }
 
+    async atribuirEntrega(idEntrega, idMotorista){
+        validarID(idEntrega);
+        validarID(idMotorista);
+
+        const idEntregaNum = Number(idEntrega);
+        const idMotoristaNum = Number(idMotorista);
+
+        const entrega = await this.repository.buscarId(idEntregaNum);
+        if(!entrega){
+            throw new AppError("Entrega não encontrada!!!", 404)
+        }
+
+        const motorista = await this.motoristaRepository.buscarId(idMotoristaNum);
+        if(!motorista){
+            throw new AppError("Motorista não encontrado!!!", 404)
+        }
+
+        if(entrega.status !== "CRIADA"){
+            throw new AppError("Essa entrega não pode ser atribuida para um motorista.", 400)
+        }
+
+        if(motorista.status !== "ATIVO"){
+            throw new AppError("Esse motorista não pode fazer entregas.", 400)
+        }
+
+        entrega.status = "EM_TRANSITO";
+        entrega.historico.push({
+            data: new Date().toISOString(),
+            histDescricao: `Entrega atribuida ao motorista ${motorista.nome} (CPF: ${motorista.cpf})`});
+
+        motorista.entregas.push(entrega);
+
+        await this.motoristaRepository.atualizar(idMotoristaNum, motorista);
+        const entregaAtualizada = await this.repository.atualizar(idEntregaNum, entrega);
+
+        return entregaAtualizada;
+    }
 }

@@ -28,5 +28,14 @@ export class MotoristaDatabase {
   
   getMotoristaCpf(cpf){
     return this.motoristas.find(e => e.cpf === cpf) || null;
-  }  
+  }
+
+  putMotorista(id, motoristaAtualizado){
+    const index = this.motoristas.findIndex(e => e.id === id);
+    if (index !== -1){
+      this.motoristas[index] = motoristaAtualizado;
+      return this.motoristas[index];
+    }
+    return null;
+  }
 }
