@@ -45,4 +45,15 @@ export class MotoristaController{
             next(error);
         }
     }
+
+    DesativarMotorista = async (req, res, next) => {
+        try{
+            const {id} = req.params;
+            const desativarMotorista = await this.motoristaServices.desativarPorId(id);
+            res.status(200).json(desativarMotorista)
+        }
+        catch(error){
+            next(error);
+        }
+    }
 }
