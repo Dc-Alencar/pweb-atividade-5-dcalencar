@@ -57,7 +57,41 @@ export class MotoristaRepository{
         }
     }
 
-    async atualizar(id, motoristaAtualizado){
-        return db.putMotorista(id, motoristaAtualizado);
+async atualizar(id, dados) {
+        try {
+            const queryUpdate = `
+                UPDATE motoristas 
+                SET 
+                    nome = COALESCE($1, nome),
+                    cpf = COALESCE($2, cpf),
+                    placa_veiculo = COALESCE($3, placa_veiculo),
+                    status = COALESCE($4, status)
+                WHERE id = $5
+                RETURNING *
+            `;
+            
+            const values = [
+                dados.nome, 
+                dados.cpf, 
+                dados.placa_veiculo, 
+                dados.status, 
+                id
+            ];
+
+            const res = await pool.query(queryUpdate, values);
+            const motoristaAtualizado = res.rows[0];
+            
+            if (!motoristaAtualizado) {
+                throw new AppError("Motorista não encontrado no banco de dados.", 404);
+            }
+
+            return motoristaAtualizado;
+
+        } catch (error) {
+            console.error("🔥 Erro ao atualizar motorista:", error);
+            
+            if (error instanceof AppError) throw error;
+            throw new AppError("Falha na atualização do motorista no banco.", 500);
+        }
     }
 }
