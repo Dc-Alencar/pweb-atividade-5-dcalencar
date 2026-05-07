@@ -61,10 +61,10 @@ Content-Type: application/json
 Exemplo de uso do endpoint para criar motorista:
 POST http://localhost:3000/api/motoristas
 Content-Type: application/json
-{
+
   "nome": "Daniel",
   "cpf": "12312312312",
-  "placa": "Placa-123"
+  "placa_veiculo": "Placa-123"
 }
 ```
 
