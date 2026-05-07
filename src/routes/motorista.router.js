@@ -14,5 +14,6 @@ motoristaRouter.post("/", motoristaController.CriarMotorista);
 motoristaRouter.get("/", motoristaController.ListarMotorista);
 motoristaRouter.get("/id/:id", motoristaController.ProcurarIdMotorista);
 motoristaRouter.get("/cpf/:cpf", motoristaController.ProcurarCpfMotorista);
+motoristaRouter.patch("/desativar/:id", motoristaController.DesativarMotorista)
 
 export default motoristaRouter;

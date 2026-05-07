@@ -52,4 +52,24 @@ export class MotoristaServices{
         return motoristaPorCpf;
     }
 
+    async desativarPorId(id){
+        validarID(id);
+        const idNum = Number(id);
+
+        const motorista = await this.repository.buscarId(idNum);
+        if(!motorista){
+            throw new AppError("Este Id não pertence a um motorista.", 404);
+        }
+
+        if(motorista.status === "INATIVO"){
+            throw new AppError("Esse motorista já está inativo!", 400);
+        }
+
+        if(motorista.status === "ATIVO"){
+            motorista.status = "INATIVO";
+        }
+
+        const motoristaAtualizado = await this.repository.atualizar(idNum, motorista);
+        return motoristaAtualizado;
+    }
 }

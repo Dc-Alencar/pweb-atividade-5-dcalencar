@@ -68,6 +68,10 @@ export class EntregaServices{
         });
         }
 
+        else if (entrega.status === "ENTREGUE"){
+            throw new AppError("Não tem como avanaçar o status de uma entrega que já foi entregue.", 400)
+        }
+
         const entregaAtualizada = await this.repository.atualizar(idNum, entrega);
         return entregaAtualizada;
     }
@@ -114,11 +118,11 @@ export class EntregaServices{
         }
 
         if(entrega.status !== "CRIADA"){
-            throw new AppError("Essa entrega não pode ser atribuida para um motorista.", 400)
+            throw new AppError("Essa entrega não pode ser atribuida para um motorista.", 422)
         }
 
         if(motorista.status !== "ATIVO"){
-            throw new AppError("Esse motorista não pode fazer entregas.", 400)
+            throw new AppError("Esse motorista não pode fazer entregas.", 422)
         }
 
         entrega.status = "EM_TRANSITO";
