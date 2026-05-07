@@ -1,0 +1,24 @@
+CREATE TABLE IF NOT EXISTS motoristas (
+    id SERIAL PRIMARY KEY,
+    nome VARCHAR(100) NOT NULL,
+    cpf VARCHAR(11) UNIQUE NOT NULL,
+    placaVeiculo VARCHAR(10) NOT NULL,
+    status VARCHAR(20) DEFAULT 'ATIVO'
+);
+
+
+CREATE TABLE IF NOT EXISTS entregas (
+    id SERIAL PRIMARY KEY,
+    descricao TEXT NOT NULL,
+    origem VARCHAR(100) NOT NULL,
+    destino VARCHAR(100) NOT NULL,
+    status VARCHAR(20) NOT NULL CHECK (status IN ('CRIADA', 'EM_TRANSITO', 'ENTREGUE', 'CANCELADO')),
+    motorista_id INTEGER REFERENCES motoristas(id) ON DELETE SET NULL
+);
+
+CREATE TABLE IF NOT EXISTS eventos_entrega (
+    id SERIAL PRIMARY KEY,
+    entrega_id INTEGER NOT NULL REFERENCES entregas(id) ON DELETE CASCADE,
+    data TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    histDescricao TEXT NOT NULL
+);

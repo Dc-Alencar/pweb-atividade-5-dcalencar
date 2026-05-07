@@ -19,5 +19,9 @@
   "bugs": {
     "url": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar/issues"
   },
-  "homepage": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar#readme"
+  "homepage": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar#readme",
+  "dependencies": {
+    "express": "^5.2.1",
+    "pg": "^8.20.0"
+  }
 }
