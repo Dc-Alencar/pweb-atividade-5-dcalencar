@@ -1,4 +1,4 @@
-import { pool } from "../database/postgre.js"; // Certifique-se de que o caminho aponta para o seu arquivo de conexão
+import { pool } from "../database/postgre.js";
 import { AppError } from "../utils/appError.js";
 
 
@@ -27,7 +27,7 @@ export class EntregaRepository{
     async criar(dados){
         const client = await pool.connect();
         try {
-            await client.query('BEGIN'); // Início da transação
+            await client.query('BEGIN');
             
             const insertEntrega = `
                 INSERT INTO entregas (descricao, origem, destino, status)

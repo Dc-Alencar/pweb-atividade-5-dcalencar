@@ -1,4 +1,4 @@
-import { pool } from "../database/postgre.js"; // Certifique-se de que o caminho aponta para o seu arquivo de conexão
+import { pool } from "../database/postgre.js";
 import { AppError } from "../utils/appError.js";
 
 export class MotoristaRepository{
