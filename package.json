@@ -21,7 +21,11 @@
   },
   "homepage": "https://github.com/Dc-Alencar/pweb-atividade-5-dcalencar#readme",
   "dependencies": {
+    "@prisma/client": "^7.8.0",
     "express": "^5.2.1",
     "pg": "^8.20.0"
+  },
+  "devDependencies": {
+    "prisma": "^7.8.0"
   }
 }
