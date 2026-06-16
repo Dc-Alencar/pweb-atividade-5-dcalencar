@@ -8,16 +8,17 @@ export class EntregaServices{
     }
 
     async listarEntregas(filtros){
-        let entregas = await this.repository.listarEntregas(filtros);
-
         if (filtros.status) {
             if (filtros.status !== "CRIADA" && filtros.status !== "ENTREGUE" && filtros.status !== "EM_TRANSITO" && filtros.status !== "CANCELADO"){
                 throw new AppError("Status inválido!", 400);                    
             }
-            entregas = entregas.filter(e => e.status === filtros.status);
-        };
-        return entregas;
-    };
+        }
+        // 2. O repositório Prisma recebe os filtros e faz a busca, paginação e filtros direto no Banco de Dados
+        const resultadoPaginado = await this.repository.listarEntregas(filtros);
+
+        // 3. Retorna o objeto estruturado com { data, total, page, limit, totalPages }
+        return resultadoPaginado;
+    }
 
     async criarEntrega(dados){
         if (dados.origem === dados.destino){

@@ -1,0 +1,56 @@
+generator client {
+  provider = "prisma-client-js"
+  engineType = "library"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// Enum do Prisma para padronizar o status
+enum StatusEntrega {
+  CRIADA
+  EM_TRANSITO
+  ENTREGUE
+  CANCELADO
+}
+
+model Motorista {
+  id           Int       @id @default(autoincrement())
+  nome         String
+  cpf          String    @unique
+  placaVeiculo String
+  status       String    @default("ATIVO")
+  entregas     Entrega[] // Relação 1:N automática
+  
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+}
+
+model Entrega {
+  id          Int             @id @default(autoincrement())
+  descricao   String
+  origem      String
+  destino     String
+  status      StatusEntrega   @default(CRIADA)
+  
+  motoristaId Int?
+  motorista   Motorista?      @relation(fields: [motoristaId], references: [id], onDelete: SetNull)
+  
+  eventos     EventoEntrega[] // Relação com os históricos
+  
+  createdAt   DateTime        @default(now())
+  updatedAt   DateTime        @updatedAt
+}
+
+model EventoEntrega {
+  id              Int      @id @default(autoincrement())
+  descricaoStatus String
+  
+  entregaId       Int
+  entrega         Entrega  @relation(fields: [entregaId], references: [id], onDelete: Cascade)
+  
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}

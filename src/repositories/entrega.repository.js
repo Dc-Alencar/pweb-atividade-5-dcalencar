@@ -1,119 +1,171 @@
-import { pool } from "../database/postgre.js";
+import { PrismaClient } from "@prisma/client";
 import { AppError } from "../utils/appError.js";
 
+const prisma = new PrismaClient();
 
-export class EntregaRepository{
-    async listarEntregas(filtros = {}){
-    try {
-        let query = `
-            SELECT e.*, m.nome as motorista_nome 
-            FROM entregas e
-            LEFT JOIN motoristas m ON e.motorista_id = m.id
-        `;
-        const params = [];
-
-        if (filtros.status) {
-            query += ` WHERE e.status = $1`;
-            params.push(filtros.status);
-        }
-
-        const result = await pool.query(query, params);
-        return result.rows; 
-    } catch (error) {
-        throw new AppError("Erro ao listar entregas do banco.", 500);
-    }
-}
-
-    async criar(dados){
-        const client = await pool.connect();
+export class EntregaRepository {
+    
+    // RF-04 e RF-05: Listagem com Paginação Dinâmica, Filtros Avançados e Datas
+    async listarEntregas(filtros = {}) {
         try {
-            await client.query('BEGIN');
+            // 1. Configuração da Paginação (RF-04)
+            const page = Math.max(1, Number(filtros.page) || 1);
+            let limit = Number(filtros.limit) || 10;
+            if (limit > 50) limit = 50; // Limite máximo de segurança
             
-            const insertEntrega = `
-                INSERT INTO entregas (descricao, origem, destino, status)
-                VALUES ($1, $2, $3, $4) RETURNING *`;
-            
-            const res = await client.query(insertEntrega, [dados.descricao, dados.origem, dados.destino, 'CRIADA']);
-            const novaEntrega = res.rows[0];
+            const skip = (page - 1) * limit;
 
-            await client.query(
-                `INSERT INTO entrega_historico (entrega_id, descricao_status) VALUES ($1, $2)`,
-                [novaEntrega.id, 'Pedido criado!!']
-            );
+            // 2. Construção dinâmica do Filtro WHERE (RF-05)
+            const where = {};
 
-            await client.query('COMMIT');
-            return novaEntrega;
+            if (filtros.status) {
+                where.status = filtros.status;
+            }
+
+            if (filtros.motoristaId) {
+                where.motoristaId = Number(filtros.motoristaId);
+            }
+
+            // Filtro por Intervalo de datas (createdAt)
+            if (filtros.createdDe || filtros.createdAte) {
+                where.createdAt = {};
+                if (filtros.createdDe) {
+                    where.createdAt.gte = new Date(filtros.createdDe); // Maior ou igual a
+                }
+                if (filtros.createdAte) {
+                    where.createdAt.lte = new Date(filtros.createdAte); // Menor ou igual a
+                }
+            }
+
+            // 3. Execução das queries em paralelo para melhor performance
+            const [data, total] = await Promise.all([
+                prisma.entrega.findMany({
+                    where,
+                    skip,
+                    take: limit,
+                    include: {
+                        eventos: true, // Traz os históricos/eventos automaticamente
+                        motorista: {
+                            select: { nome: true } // Simula o LEFT JOIN trazendo o nome do motorista
+                        }
+                    },
+                    orderBy: { id: 'asc' }
+                }),
+                prisma.entrega.count({ where })
+            ]);
+
+            // Mapeia o retorno para manter a compatibilidade ("motorista_nome") com o seu código antigo
+            const formatDados = data.map(entrega => ({
+                ...entrega,
+                motorista_nome: entrega.motorista ? entrega.motorista.nome : null
+            }));
+
+            // Retorno no formato exato exigido pelo RF-04
+            return {
+                data: formatDados,
+                total,
+                page,
+                limit,
+                totalPages: Math.ceil(total / limit)
+            };
+
         } catch (error) {
-            await client.query('ROLLBACK');
-            console.error(error);
-            throw new AppError("Erro ao criar entrega no banco", 500);
-        } finally {
-            client.release();
+            throw new AppError("Erro ao listar entregas do banco.", 500);
         }
     }
 
-    async buscarId(id){
+    // Criar Entrega e Evento associado em uma única transação nativa (RF-01)
+    async criar(dados) {
         try {
-            const query = `
-                SELECT e.*, m.nome as motorista_nome 
-                FROM entregas e
-                LEFT JOIN motoristas m ON e.motorista_id = m.id
-                WHERE e.id = $1
-            `;
-            const result = await pool.query(query, [id]);
-            return result.rows[0];
+            // O Prisma resolve transações aninhadas implicitamente!
+            return await prisma.entrega.create({
+                data: {
+                    descricao: dados.descricao,
+                    origem: dados.origem,
+                    destino: dados.destino,
+                    status: 'CRIADA',
+                    eventos: {
+                        create: {
+                            descricaoStatus: 'Pedido criado!!' // Tabela: EventoEntrega
+                        }
+                    }
+                },
+                include: { eventos: true }
+            });
+        } catch (error) {
+            throw new AppError("Erro ao criar entrega no banco", 500);
+        }
+    }
+
+    // Buscar por ID incluindo relacionamentos
+    async buscarId(id) {
+        try {
+            const entrega = await prisma.entrega.findUnique({
+                where: { id: Number(id) },
+                include: {
+                    eventos: true,
+                    motorista: { select: { nome: true } }
+                }
+            });
+
+            if (!entrega) return null; // RF-04 (Antigo): Não encontrado retorna null
+
+            return {
+                ...entrega,
+                motorista_nome: entrega.motorista ? entrega.motorista.nome : null
+            };
         } catch (error) {
             throw new AppError("Erro ao tentar acessar o banco de dados", 500);
         }
     }
 
-    async atualizar(id, entregaAtualizada){
-    const client = await pool.connect();
-    try {
-        await client.query('BEGIN');
+    // Atualizar status e injetar novo evento na transação do Prisma
+    async atualizar(id, entregaAtualizada) {
+        try {
+            const ultimaDescricao = entregaAtualizada.historico[entregaAtualizada.historico.length - 1].histDescricao;
 
-        const queryUpdate = `
-            UPDATE entregas 
-            SET status = $1, motorista_id = $2
-            WHERE id = $3 
-            RETURNING *
-        `;
-        const values = [entregaAtualizada.status, entregaAtualizada.motorista_id, id];
-        const res = await client.query(queryUpdate, values);
-        
-        const entregaNoBanco = res.rows[0];
-
-        if (!entregaNoBanco) {
-            throw new AppError("Entrega não encontrada para atualização.", 404);
+            // O uso do update do prisma gera erro P2025 automaticamente se o ID não existir
+            return await prisma.entrega.update({
+                where: { id: Number(id) },
+                data: {
+                    status: entregaAtualizada.status,
+                    motoristaId: entregaAtualizada.motorista_id ? Number(entregaAtualizada.motorista_id) : null,
+                    eventos: {
+                        create: {
+                            descricaoStatus: ultimaDescricao
+                        }
+                    }
+                }
+            });
+        } catch (error) {
+            if (error.code === 'P2025') {
+                throw new AppError("Entrega não encontrada para atualização.", 404);
+            }
+            throw new AppError("Erro ao atualizar entrega no banco.", 500);
         }
-
-        const ultimaDescricao = entregaAtualizada.historico[entregaAtualizada.historico.length - 1].histDescricao;
-        
-        await client.query(
-            `INSERT INTO entrega_historico (entrega_id, descricao_status) VALUES ($1, $2)`,
-            [id, ultimaDescricao]
-        );
-
-        await client.query('COMMIT');
-        return entregaNoBanco;
-    } catch (error) {
-        await client.query('ROLLBACK');
-        if (error instanceof AppError) throw error;
-        throw new AppError("Erro ao atualizar entrega no banco.", 500);
-    } finally {
-        client.release();
     }
-}
 
+    // Método de Relatório legado (Mantido caso seus Services ainda o chamem)
     async relatorioEntregasPorMotorista() {
-        const query = `
-            SELECT m.nome, COUNT(e.id) as total_entregas
-            FROM motoristas m
-            INNER JOIN entregas e ON m.id = e.motorista_id
-            GROUP BY m.nome
-            HAVING COUNT(e.id) > 0;
-        `;
-        const result = await pool.query(query);
-        return result.rows;
+        try {
+            const result = await prisma.motorista.findMany({
+                where: {
+                    entregas: { some: {} } // Filtra apenas motoristas com pelo menos 1 entrega (HAVING count > 0)
+                },
+                select: {
+                    nome: true,
+                    _count: {
+                        select: { entregas: true }
+                    }
+                }
+            });
+
+            return result.map(m => ({
+                nome: m.nome,
+                total_entregas: m._count.entregas
+            }));
+        } catch (error) {
+            throw new AppError("Erro ao gerar relatório de entregas por motorista.", 500);
+        }
     }
 }
